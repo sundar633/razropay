@@ -12,32 +12,73 @@ const razorpay = new Razorpay({
   key_secret: process.env.KEY_SECRET,
 });
 
+
+// 🔥 TEST ROUTE
 app.get("/", (req, res) => {
+
   res.send("Backend Running");
+
 });
 
+
+// 🔥 CREATE ORDER
 app.post("/create-order", async (req, res) => {
 
   try {
 
+    // 🔥 amount from frontend
+    const amount = req.body.amount;
+
     const options = {
-      amount: 1000,
+
+      amount: amount,
+
       currency: "INR",
+
+      receipt: "receipt_order"
+
     };
 
-    const order = await razorpay.orders.create(options);
+    // 🔥 create razorpay order
+    const order =
+      await razorpay.orders.create(options);
 
-    res.json(order);
+    // 🔥 send response
+    res.json({
 
-  } catch (err) {
+      success: true,
+
+      order: order
+
+    });
+
+  }
+
+  catch (err) {
+
     console.log(err);
-    res.status(500).send("Error");
+
+    res.status(500).json({
+
+      success: false,
+
+      message: "Order creation failed"
+
+    });
+
   }
 
 });
 
-const PORT = process.env.PORT || 5000;
 
+// 🔥 PORT
+const PORT =
+  process.env.PORT || 5000;
+
+
+// 🔥 START SERVER
 app.listen(PORT, () => {
+
   console.log("Server Started");
+
 });
