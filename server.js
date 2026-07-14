@@ -75,7 +75,61 @@ app.post("/create-order", async (req, res) => {
 const PORT =
   process.env.PORT || 5000;
 
+// 🔥 CREATE PAYMENT QR
+app.post("/create-qr", async (req, res) => {
 
+  try{
+
+    const amount = Number(req.body.amount);
+
+    if(!amount || amount <= 0){
+
+      return res.status(400).json({
+        success:false,
+        message:"Invalid amount"
+      });
+
+    }
+
+    const qr = await razorpay.qrCode.create({
+
+      type:"upi_qr",
+
+      name:"Payment",
+
+      usage:"single_use",
+
+      fixed_amount:true,
+
+      payment_amount:amount,
+
+      description:`Payment ₹${amount / 100}`
+
+    });
+
+    res.json({
+
+      success:true,
+
+      qr
+
+    });
+
+  }catch(error){
+
+    console.log(error);
+
+    res.status(500).json({
+
+      success:false,
+
+      message:"QR creation failed"
+
+    });
+
+  }
+
+});
 // 🔥 START SERVER
 app.listen(PORT, () => {
 
